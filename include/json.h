@@ -1,29 +1,49 @@
 #pragma once
 
+#include <type_traits>
 #include <unordered_map>
 #include <variant>
 namespace snx {
 namespace json {
 
-    struct null { };
+    struct parsable {
+        virtual const char* pattern() const = 0;
+    };
 
-    struct number : std::variant<double, int> { };
+    struct null : public parsable {
+        const char* pattern() const override { return R"(null)"; }
+    };
+
+    struct number : public std::variant<double, int>, public parsable {
+        const char* pattern() const override { return R"((-)?[\d]+(.[\d]*)?([eE]?(+-)?[\d]+))"; }
+    };
+
+    struct string : public parsable {
+        const char* pattern() const override { return R"((-)?[\d]+(.[\d]*)?([eE]?(+-)?[\d]+))"; }
+    };
+    struct logic : public parsable {
+        const char* pattern() const override { return R"((true)|(false))"; }
+    };
 
     /// An array is an ordered collection of values.
     /// An array begins with [left bracket and ends with ]right bracket.
     /// Values are separated by ,comma.
-    struct array { };
+    struct array : public parsable {
+        const char* pattern() const override { return R"(\[[^\]]*\])"; }
+    };
 
-    struct string { };
+    struct value : std::variant<string, number, array, logic, null> { };
 
     /// An object is an unordered set of name/value pairs.
     /// An object begins with {left brace and ends with }right brace.
-    /// Each name is followed by :colon and the name/value pairs are separated by
+    /// Each name is followed by :col2on and the name/value pairs are separated by
     /// ,comma.
     template <typename StringType>
     struct object
-        : std::unordered_map<StringType,
-              std::variant<number, bool, string, array,
-                  object<StringType>, null>> { };
+        : public std::unordered_map<StringType, std::variant<object<StringType>, value>> { };
+
+    namespace parser {
+
+    }
 } // namespace json
 }; // namespace snx
