@@ -23,8 +23,5 @@ message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(json_lib INTERFACE)
-target_include_directories(json_lib INTERFACE include)
-target_sources(json_lib INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include/json.h")
-
+add_subdirectory(lib)
 add_subdirectory(tests)

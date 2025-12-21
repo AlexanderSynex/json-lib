@@ -2,7 +2,6 @@
 
 #include <regex>
 #include <string_view>
-#include <type_traits>
 #include <unordered_map>
 #include <variant>
 namespace snx
@@ -35,7 +34,7 @@ struct number : public std::variant<double, int>, public parsable
   const char *
   pattern () const override
   {
-    return R"((-)?[\d]+(.[\d]*)?([eE](+-)?[\d]+))";
+    return R"(((-)?([\d]+)(\.[\d]+)?([eE][\+-]?[\d]+)?))";
   }
 };
 
