@@ -1,9 +1,12 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <regex>
 #include <string_view>
 #include <unordered_map>
 #include <variant>
+
 namespace snx
 {
 namespace json
@@ -43,7 +46,9 @@ struct string : public parsable
   const char *
   pattern () const override
   {
-    return R"((-)?[\d]+(.[\d]*)?([eE]?(+-)?[\d]+))";
+    return R"(")"
+           R"(([^"]|\\["\\\/bfnrt]|\\u[0-9a-fA-F]{4})*)"
+           R"(")";
   }
 };
 struct logic : public parsable
