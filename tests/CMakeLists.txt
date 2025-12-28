@@ -9,4 +9,19 @@ FetchContent_MakeAvailable(googletest)
 
 include(GoogleTest)
 
-add_subdirectory(types)
+function(create_test)
+  set(TARGET_NAME tests)
+  set(multiValueArgs SOURCES TESTS)
+  # Parse the arguments
+  cmake_parse_arguments(ARG "" "" "${multiValueArgs}" ${ARGN})
+
+  add_executable(${TARGET_NAME})
+ foreach(TEST_DIR ${ARG_TESTS})
+    list(APPEND TEST_FILES ${TEST_DIR}/test.cxx)
+  endforeach()
+  target_sources(${TARGET_NAME} PRIVATE ${TEST_FILES})
+  target_link_libraries(${TARGET_NAME} PRIVATE gtest gtest_main json_lib)
+  gtest_discover_tests(${TARGET_NAME})
+endfunction()
+
+create_test(TESTS types/null types/numbers types/string)
