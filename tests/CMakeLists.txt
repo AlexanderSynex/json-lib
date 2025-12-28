@@ -24,4 +24,7 @@ function(create_test)
   gtest_discover_tests(${TARGET_NAME})
 endfunction()
 
-create_test(TESTS types/null types/numbers types/string)
+create_test(TESTS types/null 
+                  types/numbers 
+                  types/string
+                  parsing/object)

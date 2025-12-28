@@ -1,8 +1,14 @@
 #pragma once
 
+#include <string>
+
+#define WIP() \
+  throw std::logic_error("Unreleased method");
+
+#include <istream>
 #include <regex>
+#include <stdexcept>
 #include <string_view>
-#include <type_traits>
 #include <unordered_map>
 #include <variant>
 
@@ -77,16 +83,20 @@ struct value : std::variant<string, number, array, logic, null>
 /// An object begins with {left brace and ends with }right brace.
 /// Each name is followed by :col2on and the name/value pairs are separated by
 /// ,comma.
-template <typename StringType>
 struct object
-    : public std::unordered_map<StringType,
-                                std::variant<object<StringType>, value>>
+    : public std::unordered_map<std::string, std::variant<object, value>>
 {
+  object (std::istream&& src) {
+    WIP()
+  }
+
+  template <typename ValueType>
+  ValueType
+  operator[] (std::string_view token) const
+  {
+    WIP()
+  };
 };
 
-namespace parser
-{
-
-}
 } // namespace json
 }; // namespace snx
