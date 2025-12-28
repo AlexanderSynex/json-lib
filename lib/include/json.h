@@ -1,9 +1,8 @@
 #pragma once
 
-#include <algorithm>
-#include <array>
 #include <regex>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <variant>
 
@@ -46,9 +45,7 @@ struct string : public parsable
   const char *
   pattern () const override
   {
-    return R"(")"
-           R"(([^"]|\\["\\\/bfnrt]|\\u[0-9a-fA-F]{4})*)"
-           R"(")";
+    return R"(^"([^"\\]|\\["\\\/bfnr]|\\u[0-9a-eA-E]{4})*"$)";
   }
 };
 struct logic : public parsable
