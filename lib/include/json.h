@@ -1,13 +1,15 @@
 #pragma once
 
+#include <cstddef>
+#include <optional>
+#include <stdexcept>
 #include <string>
 
-#define WIP() \
-  throw std::logic_error("Unreleased method");
+#define WIP() throw std::logic_error ("Unreleased method");
 
 #include <istream>
 #include <regex>
-#include <stdexcept>
+
 #include <string_view>
 #include <unordered_map>
 #include <variant>
@@ -17,6 +19,8 @@ namespace snx
 namespace json
 {
 
+template <typename ValueType> using optional = std::optional<ValueType>;
+
 struct parsable
 {
   bool
@@ -25,12 +29,12 @@ struct parsable
     return std::regex_match (str.begin (), str.end (),
                              std::regex{ pattern () });
   }
-  virtual const char *pattern () const = 0;
+  virtual std::string pattern () const = 0;
 };
 
 struct null : public parsable
 {
-  const char *
+  std::string
   pattern () const override
   {
     return R"((null))";
@@ -39,7 +43,7 @@ struct null : public parsable
 
 struct number : public std::variant<double, int>, public parsable
 {
-  const char *
+  std::string
   pattern () const override
   {
     return R"(((-)?([\d]+)(\.[\d]+)?([eE][\+-]?[\d]+)?))";
@@ -48,7 +52,7 @@ struct number : public std::variant<double, int>, public parsable
 
 struct string : public parsable
 {
-  const char *
+  std::string
   pattern () const override
   {
     return R"(^"([^"\\]|\\["\\\/bfnr]|\\u[0-9a-eA-E]{4})*"$)";
@@ -56,7 +60,7 @@ struct string : public parsable
 };
 struct logic : public parsable
 {
-  const char *
+  std::string
   pattern () const override
   {
     return R"((true)|(false))";
@@ -68,7 +72,7 @@ struct logic : public parsable
 /// Values are separated by ,comma.
 struct array : public parsable
 {
-  const char *
+  std::string
   pattern () const override
   {
     return R"(\[[^\]]*\])";
@@ -86,16 +90,58 @@ struct value : std::variant<string, number, array, logic, null>
 struct object
     : public std::unordered_map<std::string, std::variant<object, value>>
 {
-  object (std::istream&& src) {
-    WIP()
+};
+
+namespace utils
+{
+
+enum class ErrorCode
+{
+  NO_ERROR = 0,
+  NO_OBJECT = 1,
+};
+
+inline bool
+validate (std::string_view dump, ErrorCode &ec)
+{
+  constexpr auto whitespaces = " \t";
+  auto first_non_ws = dump.find_first_not_of (whitespaces);
+  auto last_non_ws = dump.find_last_of (whitespaces);
+  if (first_non_ws >= dump.size () or last_non_ws == 0)
+    {
+      ec = ErrorCode::NO_OBJECT;
+      return false;
+    }
+  dump.remove_prefix (first_non_ws);
+  dump.remove_suffix (last_non_ws);
+
+  for (std::size_t lh = 0, rh = dump.size (); lh < rh; ++lh, --rh)
+    {
+    };
+  return true;
+}
+}
+
+struct json
+{
+  json (std::istream &&src)
+  {
+    auto dump = std::string{};
+    for (auto line = std::string{}; std::getline (src, line);
+         dump.append (line))
+      ;
   }
 
   template <typename ValueType>
-  ValueType
-  operator[] (std::string_view token) const
+  optional<ValueType>
+  operator[] (std::string_view token) const noexcept
   {
-    WIP()
+    WIP ()
+    return {};
   };
+
+private:
+  optional<object> root = {};
 };
 
 } // namespace json
