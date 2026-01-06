@@ -27,4 +27,7 @@ endfunction()
 create_test(TESTS types/null 
                   types/numbers 
                   types/string
-                  parsing/object)
+                  parsing/object
+                  parsing/validating
+                  utils
+                  json)

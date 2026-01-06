@@ -1,6 +1,7 @@
 *.*
 build
 !.gitignore
+!.clang-*
 !*.c
 !*.cpp
 !*.h
