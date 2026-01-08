@@ -4,6 +4,7 @@ build
 !.clang-*
 !*.c
 !*.cpp
+!*.cxx
 !*.h
 !*.hpp
 !CMakeLists.txt
